@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     Button btnSend;
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnGallery;
     Button btnRotate;
     String imageString;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
         btnRotate = findViewById(R.id.btnRotate);
         imageView = findViewById(R.id.imageView);
+        textView = findViewById(R.id.txtTest);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
