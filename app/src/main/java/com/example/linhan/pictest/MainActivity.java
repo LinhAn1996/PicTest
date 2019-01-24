@@ -1,14 +1,24 @@
 package com.example.linhan.pictest;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
     Button btnSend;
@@ -18,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnRotate;
     String imageString;
     TextView textView;
+    Intent outputIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         btnRotate = findViewById(R.id.btnRotate);
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.txtTest);
+        outputIntent = new Intent(this, OutputActivity.class);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,11 +57,60 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(gallery, 100);
             }
         });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                outputIntent.putExtra("image", imageString);
+            }
+        });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0){
+            if(resultCode == RESULT_OK){
+                imageString = "";
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                imageString = convertBitmapToString(bitmap);
+                outputIntent.putExtra("image", imageString);
+                imageView.setImageBitmap(bitmap);
 
+            }
+        }
+
+        if(requestCode == 100){
+            if(resultCode == RESULT_OK){
+                Bitmap bitmap;
+                imageString = "";
+                Uri image = data.getData();
+                try (InputStream is = getContentResolver().openInputStream(image)){
+                    bitmap = BitmapFactory.decodeStream(is);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
+
+                }catch(FileNotFoundException e){
+                    bitmap = null;
+                    e.printStackTrace();
+                }catch (IOException e){
+                    bitmap = null;
+                    e.printStackTrace();
+                }
+
+                if(bitmap != null){
+                    imageString = convertBitmapToString(bitmap);
+                    imageView.setImageBitmap(bitmap);
+                }else{
+                    Toast.makeText(this, "Error: error loading image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private String convertBitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bs);
+        byte [] bytes = bs.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
 }
