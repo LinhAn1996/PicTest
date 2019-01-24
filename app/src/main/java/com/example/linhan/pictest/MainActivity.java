@@ -3,6 +3,8 @@ package com.example.linhan.pictest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -62,8 +64,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 outputIntent.putExtra("image", imageString);
+                startActivity(outputIntent);
             }
         });
+
+        btnRotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bitmap = bd.getBitmap();
+                Bitmap rotated = rotateBitmap(bitmap, 200, 200);
+                imageView.setImageBitmap(rotated);
+                imageString = convertBitmapToString(rotated);
+            }
+        });
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, int width, int height) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+        return rotatedBitmap;
     }
 
     @Override
