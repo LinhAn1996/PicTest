@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 imageString = convertBitmapToString(bitmap);
                 outputIntent.putExtra("image", imageString);
                 imageView.setImageBitmap(bitmap);
+                btnSend.setVisibility(View.VISIBLE);
+                btnRotate.setVisibility(View.VISIBLE);
 
             }
         }
@@ -122,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 if(bitmap != null){
                     imageString = convertBitmapToString(bitmap);
                     imageView.setImageBitmap(bitmap);
+                    btnSend.setVisibility(View.VISIBLE);
+                    btnRotate.setVisibility(View.VISIBLE);
                 }else{
                     Toast.makeText(this, "Error: error loading image", Toast.LENGTH_SHORT).show();
                 }
